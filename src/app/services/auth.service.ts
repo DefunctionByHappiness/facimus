@@ -1,0 +1,94 @@
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+
+  url = 'http://localhost:3000';
+
+  constructor(private http: HttpClient, private router: Router) { }
+
+  private authUser = new BehaviorSubject(false);
+
+  public user = this.authUser.asObservable();
+
+  public updateAuth(user: any) {
+    const logged = this.saveToken(user);
+    this.authUser.next(logged);
+  }
+
+  public login(username: string, password: string): any {
+    const promise = new Promise<any>((resolve, reject) => {
+
+      this.http.post(`${this.url}/user/login`, { username, password }).toPromise()
+      .then(
+        res => {
+          this.updateAuth(res);
+          resolve(res);
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
+
+    return promise;
+  }
+
+  public logout(): any {
+
+    const promise = new Promise<any>((resolve, reject) => {
+
+      this.updateAuth(false);
+
+      this.http.get(`${this.url}/user/logout`).toPromise()
+      .then(
+        res => {
+          resolve(res);
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
+
+    localStorage.removeItem('token');
+    this.authUser.next(false);
+    return promise;
+  }
+
+  public register(username: string, password: string) {
+
+    const promise = new Promise<any>((resolve, reject) => {
+
+      this.http.post(`${this.url}/user`, { username, password }).toPromise()
+      .then(
+        res => {
+          this.updateAuth(res);
+          resolve(res);
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
+    
+    return promise;
+  }
+
+  private saveToken(user: any): boolean {
+    if (user.err) { return false; }
+    localStorage.setItem('token', JSON.stringify(user));
+    return true;
+  }
+
+  public isIdentified() {
+    const user = JSON.parse(localStorage.getItem('token'));
+    const loggedIn = (user && user.username) ? true : false;
+    this.authUser.next(loggedIn);
+  }
+}
