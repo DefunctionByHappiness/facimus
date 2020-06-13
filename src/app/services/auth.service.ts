@@ -25,7 +25,6 @@ export class AuthService {
 
   public login(username: string, password: string): any {
     const promise = new Promise<any>((resolve, reject) => {
-
       this.http.post(`${this.url}/user/login`, { username, password }).toPromise()
       .then(
         res => {

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,8 @@ import { Router } from '@angular/router';
 export class AuthInterceptorService implements HttpInterceptor {
 
   constructor(
-    private router: Router
+    private router: Router,
+    public toasterService: ToastrService
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -29,10 +31,17 @@ export class AuthInterceptorService implements HttpInterceptor {
 
     return next.handle(request).pipe(
       catchError((err: HttpErrorResponse) => {
-
+        /*
         if (err.status === 401) {
           this.router.navigateByUrl('/login');
         }
+        */
+        try {
+          this.toasterService.error(`${err.status}: ${err.statusText}`, err.error, { positionClass: 'toast-top-right', disableTimeOut: false });
+        } catch(e) {
+          this.toasterService.error('An error occurred', '', { positionClass: 'toast-top-right' });
+        }
+        //log error 
 
         return throwError( err );
 
