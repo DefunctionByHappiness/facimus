@@ -2,3 +2,5 @@ node_modules
 src/environments/environment.prod.ts
 package-lock.json
 .vscode
+dist
+node

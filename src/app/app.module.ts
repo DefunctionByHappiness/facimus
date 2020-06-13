@@ -14,7 +14,7 @@ import { AngularMaterialModule } from './components/material-designs.module';
 import { AuthInterceptorService } from './interceptors/auth-interceptor.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthGuardService } from './services/auth-guard.service';
-
+import { ToastrModule } from 'ngx-toastr';
 
 
 @NgModule({
@@ -32,7 +32,8 @@ import { AuthGuardService } from './services/auth-guard.service';
     FormsModule,
     ReactiveFormsModule,
     AngularMaterialModule,
-    HttpClientModule
+    HttpClientModule,
+    ToastrModule.forRoot()
   ],
   providers: [
     {

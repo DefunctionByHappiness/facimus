@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../environments/environment';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  url = 'http://localhost:3000';
+  url = environment.host;
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -23,7 +25,6 @@ export class AuthService {
 
   public login(username: string, password: string): any {
     const promise = new Promise<any>((resolve, reject) => {
-
       this.http.post(`${this.url}/user/login`, { username, password }).toPromise()
       .then(
         res => {
